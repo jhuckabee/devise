@@ -1,3 +1,6 @@
+require 'mongo_mapper'
+require 'devise/models'
+
 module Devise
   module Orm
     module MongoMapper

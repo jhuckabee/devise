@@ -241,5 +241,5 @@ rescue
   require 'warden'
 end
 
+require 'devise/railtie'
 require 'devise/mapping'
-require 'devise/rails'

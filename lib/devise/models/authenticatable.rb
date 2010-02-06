@@ -89,6 +89,7 @@ module Devise
         # authenticated user if it's valid or nil. Attributes are by default
         # :email and :password, but the latter is always required.
         def authenticate(attributes={})
+          attributes.symbolize_keys!
           return unless authentication_keys.all? { |k| attributes[k].present? }
           conditions = attributes.slice(*authentication_keys)
           resource = find_for_authentication(conditions)
@@ -113,7 +114,7 @@ module Devise
         #   end
         #
         def find_for_authentication(conditions)
-          find(:first, :conditions => conditions)
+          first(:conditions => conditions)
         end
 
       end

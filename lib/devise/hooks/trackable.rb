@@ -6,7 +6,7 @@ Warden::Manager.after_set_user :except => :fetch do |record, warden, options|
     record.last_sign_in_at    = old_current || new_current
     record.current_sign_in_at = new_current
 
-    old_current, new_current  = record.current_sign_in_ip, warden.request.remote_ip
+    old_current, new_current  = record.current_sign_in_ip, warden.request.ip
     record.last_sign_in_ip    = old_current || new_current
     record.current_sign_in_ip = new_current
 

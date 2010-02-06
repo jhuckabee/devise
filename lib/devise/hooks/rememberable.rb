@@ -11,7 +11,7 @@ Warden::Manager.after_authentication do |record, warden, options|
      warden.authenticated?(scope) && record.respond_to?(:remember_me!)
     record.remember_me!
 
-    warden.response.set_cookie "remember_#{scope}_token", {
+    warden.warden_cookies["remember_#{scope}_token"] = {
       :value => record.class.serialize_into_cookie(record),
       :expires => record.remember_expires_at,
       :path => "/"
@@ -25,6 +25,6 @@ end
 Warden::Manager.before_logout do |record, warden, scope|
   if record.respond_to?(:forget_me!)
     record.forget_me!
-    warden.response.delete_cookie "remember_#{scope}_token"
+    warden.warden_cookies.delete "remember_#{scope}_token"
   end
 end

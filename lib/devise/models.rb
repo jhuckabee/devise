@@ -87,7 +87,7 @@ module Devise
     def find_or_initialize_with_error_by(attribute, value, error=:invalid)
       if value.present?
         conditions = { attribute => value }
-        record = find(:first, :conditions => conditions)
+        record = first(:conditions => conditions)
       end
 
       unless record
