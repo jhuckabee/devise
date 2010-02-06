@@ -1,5 +1,4 @@
 * Make test run with DataMapper
 * Make test run with Rails 3 (update test/rails_app)
 * Add Registerable support
-* Add http authentication support
 * Extract Activatable tests from Confirmable
