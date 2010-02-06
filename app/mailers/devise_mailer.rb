@@ -22,23 +22,26 @@ class DeviseMailer < ::ActionMailer::Base
       mapping = Devise::Mapping.find_by_class(record.class)
       raise "Invalid devise resource #{record}" unless mapping
 
-      subject      translate(mapping, key)
-      from         mailer_sender(mapping)
-      recipients   record.email
-      sent_on      Time.now
-      content_type 'text/html'
-      body         render_with_scope(key, mapping, mapping.name => record, :resource => record)
+      instance_variable_set("@#{mapping.name}", record)
+      @resource = record
+
+      mail({:subject      => translate(mapping, key),
+            :from         => mailer_sender(mapping),
+            :to           => record.email,
+            :date         => Date.today }) do |format|
+        format.html { render_with_scope(key, mapping) }
+      end
     end
 
-    def render_with_scope(key, mapping, assigns)
+    def render_with_scope(key, mapping)
       if Devise.scoped_views
         begin
-          render :file => "devise_mailer/#{mapping.as}/#{key}", :body => assigns
+          render :file => "devise_mailer/#{mapping.as}/#{key}"
         rescue ActionView::MissingTemplate
-          render :file => "devise_mailer/#{key}", :body => assigns
+          render :file => "devise_mailer/#{key}"
         end
       else
-        render :file => "devise_mailer/#{key}", :body => assigns
+        render :file => "devise_mailer/#{key}"
       end
     end
 

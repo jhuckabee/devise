@@ -8,7 +8,7 @@ module Devise
     railtie_name :devise
 
     def load_paths
-      Dir["#{DEVISE_PATH}/app/{models,controllers,helpers}"]
+      Dir["#{DEVISE_PATH}/app/{mailers,controllers,helpers}"]
     end
     
     # TODO: 'after' and 'before' hooks appear to be broken
