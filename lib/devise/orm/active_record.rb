@@ -1,3 +1,5 @@
+require 'devise/models'
+
 module Devise
   module Orm
     # This module contains some helpers and handle schema (migrations):
