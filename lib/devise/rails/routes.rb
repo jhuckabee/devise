@@ -88,7 +88,7 @@ module ActionDispatch::Routing
         route_options = mapping.route_options.merge(:path_prefix => mapping.raw_path, :name_prefix => "#{mapping.name}_")
 
         mapping.for.each do |mod|
-          send(mod, routes, mapping) if self.respond_to?(mod, true)
+          send(mod, mapping) if self.respond_to?(mod, true)
         end
       end
     end
