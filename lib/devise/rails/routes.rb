@@ -4,8 +4,8 @@ module ActionController::Routing
     # Ensure Devise modules are included only after loading routes, because we
     # need devise_for mappings already declared to create magic filters and
     # helpers.
-    def load_routes_with_devise!
-      load_routes_without_devise!
+    def finalize_with_devise!
+      finalize_without_devise!
       return if Devise.mappings.empty?
 
       ActionController::Base.send :include, Devise::Controllers::Helpers
@@ -13,7 +13,7 @@ module ActionController::Routing
 
       ActionView::Base.send :include, Devise::Controllers::UrlHelpers
     end
-    alias_method_chain :load_routes!, :devise
+    alias_method_chain :finalize!, :devise
 
     class Mapper #:doc:
       # Includes devise_for method for routes. This method is responsible to
