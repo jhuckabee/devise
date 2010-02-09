@@ -22,7 +22,7 @@ module Devise
     #
     module ActiveRecord
       # Required ORM hook. Just yield the given block in ActiveRecord.
-      def self.included_modules_hook(klass, modules)
+      def self.included_modules_hook(klass)
         yield
       end
 
@@ -38,5 +38,6 @@ end
 
 if defined?(ActiveRecord)
   ActiveRecord::Base.extend Devise::Models
+  ActiveRecord::ConnectionAdapters::Table.send :include, Devise::Orm::ActiveRecord
   ActiveRecord::ConnectionAdapters::TableDefinition.send :include, Devise::Orm::ActiveRecord
 end

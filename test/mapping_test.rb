@@ -63,18 +63,22 @@ class MappingTest < ActiveSupport::TestCase
 
   test 'return default path names' do
     mapping = Devise.mappings[:user]
-    assert_equal 'sign_in', mapping.path_names[:sign_in]
-    assert_equal 'sign_out', mapping.path_names[:sign_out]
-    assert_equal 'password', mapping.path_names[:password]
+    assert_equal 'sign_in',      mapping.path_names[:sign_in]
+    assert_equal 'sign_out',     mapping.path_names[:sign_out]
+    assert_equal 'password',     mapping.path_names[:password]
     assert_equal 'confirmation', mapping.path_names[:confirmation]
+    assert_equal 'sign_up', mapping.path_names[:sign_up]
+    assert_equal 'unlock',       mapping.path_names[:unlock]
   end
 
   test 'allow custom path names to be given' do
     mapping = Devise.mappings[:manager]
-    assert_equal 'login', mapping.path_names[:sign_in]
-    assert_equal 'logout', mapping.path_names[:sign_out]
-    assert_equal 'secret', mapping.path_names[:password]
+    assert_equal 'login',        mapping.path_names[:sign_in]
+    assert_equal 'logout',       mapping.path_names[:sign_out]
+    assert_equal 'secret',       mapping.path_names[:password]
     assert_equal 'verification', mapping.path_names[:confirmation]
+    assert_equal 'register',     mapping.path_names[:sign_up]
+    assert_equal 'unblock',      mapping.path_names[:unlock]
   end
 
   test 'has an empty path as default path prefix' do
@@ -86,7 +90,7 @@ class MappingTest < ActiveSupport::TestCase
     mapping = Devise.mappings[:manager]
     assert_equal '/:locale/', mapping.path_prefix
   end
-  
+
   test 'retrieve as from the proper position' do
     assert_equal 1, Devise.mappings[:user].as_position
     assert_equal 2, Devise.mappings[:manager].as_position
@@ -96,13 +100,13 @@ class MappingTest < ActiveSupport::TestCase
     assert_equal '/users', Devise.mappings[:user].raw_path
     assert_equal '/:locale/accounts', Devise.mappings[:manager].raw_path
   end
-  
+
   test 'raw path ignores the relative_url_root' do
     swap ActionController::Base, :relative_url_root => "/abc" do
       assert_equal '/users', Devise.mappings[:user].raw_path
     end
   end
-  
+
   test 'parsed path is returned' do
     begin
       Devise.default_url_options {{ :locale => I18n.locale }}
@@ -112,7 +116,7 @@ class MappingTest < ActiveSupport::TestCase
       Devise.default_url_options {{ }}
     end
   end
-  
+
   test 'parsed path adds in the relative_url_root' do
     swap ActionController::Base, :relative_url_root => '/abc' do
       assert_equal '/abc/users', Devise.mappings[:user].parsed_path

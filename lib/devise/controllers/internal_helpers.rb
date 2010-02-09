@@ -7,6 +7,7 @@ module Devise
 
       def self.included(base)
         base.class_eval do
+          extend ScopedViews
           unloadable
 
           helper_method :resource, :scope_name, :resource_name, :resource_class, :devise_mapping, :devise_controller?
@@ -14,6 +15,16 @@ module Devise
 
           skip_before_filter *Devise.mappings.keys.map { |m| :"authenticate_#{m}!" }
           before_filter :is_devise_resource?
+        end
+      end
+
+      module ScopedViews
+        def scoped_views
+          defined?(@scoped_views) ? @scoped_views : Devise.scoped_views
+        end
+
+        def scoped_views=(value)
+          @scoped_views = value
         end
       end
 
@@ -59,12 +70,9 @@ module Devise
         instance_variable_set(:"@#{resource_name}", new_resource)
       end
 
-      # Build a devise resource without setting password and password confirmation fields.
+      # Build a devise resource.
       def build_resource
-        self.resource ||= begin
-          attributes = params[resource_name].try(:except, :password, :password_confirmation)
-          resource_class.new(attributes || {})
-        end
+        self.resource ||= resource_class.new(params[resource_name] || {})
       end
 
       # Helper for use in before_filters where no authentication is required.
@@ -104,7 +112,8 @@ module Devise
       # Accepts just :controller as option.
       def render_with_scope(action, options={})
         controller_name = options.delete(:controller) || self.controller_name
-        if Devise.scoped_views
+
+        if self.class.scoped_views
           begin
             render :template => "#{controller_name}/#{devise_mapping.as}/#{action}"
           rescue ActionView::MissingTemplate

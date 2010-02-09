@@ -4,7 +4,6 @@ module Devise
   autoload :TestHelpers, 'devise/test_helpers'
 
   module Controllers
-    autoload :Common, 'devise/controllers/common'
     autoload :Helpers, 'devise/controllers/helpers'
     autoload :InternalHelpers, 'devise/controllers/internal_helpers'
     autoload :UrlHelpers, 'devise/controllers/url_helpers'
@@ -32,7 +31,7 @@ module Devise
   ALL.push :authenticatable, :token_authenticatable, :rememberable
 
   # Misc after
-  ALL.push :recoverable, :validatable
+  ALL.push :recoverable, :registerable, :validatable
 
   # The ones which can sign out after
   ALL.push :activatable, :confirmable, :lockable, :timeoutable
@@ -40,20 +39,24 @@ module Devise
   # Stats for last, so we make sure the user is really signed in
   ALL.push :trackable
 
-  # Maps controller names to devise modules
+  # Maps controller names to devise modules.
   CONTROLLERS = {
     :sessions => [:authenticatable, :token_authenticatable],
     :passwords => [:recoverable],
     :confirmations => [:confirmable],
+    :registrations => [:registerable],
     :unlocks => [:lockable]
   }
+
+  # Routes for generating url helpers.
+  ROUTES = [:session, :password, :confirmation, :registration, :unlock]
 
   STRATEGIES  = [:rememberable, :http_authenticatable, :token_authenticatable, :authenticatable]
 
   TRUE_VALUES = [true, 1, '1', 't', 'T', 'true', 'TRUE']
 
   # Maps the messages types that are used in flash message.
-  FLASH_MESSAGES = [ :unauthenticated, :unconfirmed, :invalid, :invalid_token, :timeout, :inactive, :locked ]
+  FLASH_MESSAGES = [:unauthenticated, :unconfirmed, :invalid, :invalid_token, :timeout, :inactive, :locked]
 
   # Declare encryptors length which are used in migrations.
   ENCRYPTORS_LENGTH = {
@@ -133,7 +136,7 @@ module Devise
 
   # Tell when to use the default scope, if one cannot be found from routes.
   mattr_accessor :use_default_scope
-  @@use_default_scope
+  @@use_default_scope = false
 
   # The default scope which is used by warden.
   mattr_accessor :default_scope
@@ -141,7 +144,7 @@ module Devise
 
   # Address which sends Devise e-mails.
   mattr_accessor :mailer_sender
-  @@mailer_sender
+  @@mailer_sender = nil
 
   # Authentication token params key name of choice. E.g. /users/sign_in?some_key=...
   mattr_accessor :token_authentication_key

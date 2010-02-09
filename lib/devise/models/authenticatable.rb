@@ -32,9 +32,15 @@ module Devise
         base.class_eval do
           extend ClassMethods
 
-          attr_reader :password, :old_password
+          attr_reader :password, :current_password
           attr_accessor :password_confirmation
         end
+      end
+
+      # TODO Remove me in next release
+      def old_password
+        ActiveSupport::Deprecation.warn "old_password is deprecated, please use current_password instead", caller
+        @old_password
       end
 
       # Regenerates password salt and encrypted password each time password is set,
@@ -64,15 +70,35 @@ module Devise
         valid_password?(attributes[:password])
       end
 
-      # Update record attributes when :old_password matches, otherwise returns
-      # error on :old_password.
+      # Set password and password confirmation to nil
+      def clean_up_passwords
+        self.password = self.password_confirmation = nil
+      end
+
+      # Update record attributes when :current_password matches, otherwise returns
+      # error on :current_password. It also automatically rejects :password and
+      # :password_confirmation if they are blank.
       def update_with_password(params={})
-        if valid_password?(params[:old_password])
+        # TODO Remove me in next release
+        if params[:old_password].present?
+          params[:current_password] ||= params[:old_password]
+          ActiveSupport::Deprecation.warn "old_password is deprecated, please use current_password instead", caller
+        end
+
+        params.delete(:password) if params[:password].blank?
+        params.delete(:password_confirmation) if params[:password_confirmation].blank?
+
+        result = if valid_password?(params[:current_password])
           update_attributes(params)
         else
-          self.class.add_error_on(self, :old_password, :invalid, false)
+          message = params[:current_password].blank? ? :blank : :invalid
+          self.class.add_error_on(self, :current_password, message, false)
+          self.attributes = params
           false
         end
+
+        clean_up_passwords unless result
+        result
       end
 
       protected
