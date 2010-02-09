@@ -23,7 +23,7 @@ module Devise
       protected
 
         def valid_controller?
-          params[:controller] == 'sessions'
+          request.env['action_dispatch.request.parameters']['controller'] == 'sessions'
         end
 
         def valid_params?
